@@ -18,64 +18,67 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.jpa.aula.domain.exception.EntidadeEmUsoException;
 import com.example.jpa.aula.domain.exception.EntidadeNaoEncontradaException;
-import com.example.jpa.aula.domain.model.Cozinha;
-import com.example.jpa.aula.domain.repository.CozinhaRepository;
-import com.example.jpa.aula.domain.service.CadastroCozinhaService;
+import com.example.jpa.aula.domain.model.Cidade;
+import com.example.jpa.aula.domain.repository.CidadeRepository;
+import com.example.jpa.aula.domain.service.CadastroCidadeService;
 
 @RestController
-@RequestMapping("/cozinhas")
-public class CozinhaController {
+@RequestMapping("/cidades")
+public class CidadeController {
+    @Autowired
+    private CidadeRepository cidadeRepository;
 
     @Autowired
-    private CozinhaRepository cozinhaRepository;
-
-    @Autowired
-    private CadastroCozinhaService cadastroCozinhaService;
+    private CadastroCidadeService cadastroCidadeService;
 
     @GetMapping
-    public List<Cozinha> listar() {
-        return cozinhaRepository.listar();
+    public List<Cidade> listar() {
+        return cidadeRepository.listar();
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
-    // public Cozinha buscar(@PathVariable(value = "id") Long id) { //OU
-    public ResponseEntity<Cozinha> buscar(@PathVariable Long id) {
-        Cozinha cozinha = cozinhaRepository.buscar(id);
+    public ResponseEntity<Cidade> buscar(@PathVariable Long id) {
+        Cidade cidade = cidadeRepository.buscar(id);
 
-        if (cozinha == null) {
+        if (cidade == null) {
             return ResponseEntity.notFound().build();
         } else {
-            return ResponseEntity.ok(cozinha);
+            return ResponseEntity.ok(cidade);
         }
+
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Cozinha adicionar(@RequestBody Cozinha cozinha) {
-        return cadastroCozinhaService.salvar(cozinha);
+    public Cidade adicionar(@RequestBody Cidade cidade) {
+        return cadastroCidadeService.salvar(cidade);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Cozinha> atualizar(@PathVariable Long id, @RequestBody Cozinha cozinha) {
-        Cozinha cozinhaSalva = cozinhaRepository.buscar(id);
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Cidade cidade) {
+        Cidade cidadeSalva = cidadeRepository.buscar(id);
 
-        if (cozinhaSalva == null) { // nao encontrou
+        if (cidadeSalva == null) { // nao encontrou
             return ResponseEntity.notFound().build();
         }
 
-        BeanUtils.copyProperties(cozinha, cozinhaSalva, "id");
+        try {
+            BeanUtils.copyProperties(cidade, cidadeSalva, "id");
 
-        cadastroCozinhaService.salvar(cozinhaSalva);
+            cadastroCidadeService.salvar(cidadeSalva);
 
-        return ResponseEntity.ok(cozinhaSalva);
+            return ResponseEntity.ok(cidadeSalva);
+        } catch (EntidadeNaoEncontradaException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<Cozinha> remover(@PathVariable Long id) {
+    public ResponseEntity<Cidade> remover(@PathVariable Long id) {
         try {
-            cadastroCozinhaService.excluir(id);
+            cadastroCidadeService.remover(id);
 
             return ResponseEntity.noContent().build();
 

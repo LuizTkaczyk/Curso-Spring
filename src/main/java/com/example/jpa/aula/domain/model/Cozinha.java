@@ -1,7 +1,5 @@
 package com.example.jpa.aula.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,7 +19,7 @@ public class Cozinha {
     private Long id;
 
 
-    @JsonProperty("titulo")
+    //@JsonProperty("titulo")
    // @JsonIgnore
     @Column(nullable = false)
     private String nome;
