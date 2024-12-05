@@ -2,12 +2,17 @@ package com.example.jpa.aula.infraestructure.repository;
 
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.jpa.aula.domain.model.Cidade;
 import com.example.jpa.aula.domain.repository.CidadeRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
+@Component
 public class CidadeRepositoryImpl implements CidadeRepository {
 
     @PersistenceContext
@@ -24,13 +29,20 @@ public class CidadeRepositoryImpl implements CidadeRepository {
     }
 
     @Override
+    @Transactional
     public Cidade salvar(Cidade cidade) {
         return entityManager.merge(cidade);
     }
 
     @Override
-    public void remover(Cidade cidade) {
-        cidade = buscar(cidade.getId());
+    @Transactional
+    public void remover(Long id) {
+        Cidade cidade = buscar(id);
+
+        if (cidade == null) {
+            throw new EmptyResultDataAccessException(1);
+        }
+
         entityManager.remove(cidade);
     }
 

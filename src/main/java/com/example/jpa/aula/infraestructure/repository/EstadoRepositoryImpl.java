@@ -3,6 +3,7 @@ package com.example.jpa.aula.infraestructure.repository;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.jpa.aula.domain.model.Estado;
 import com.example.jpa.aula.domain.repository.EstadoRepository;
@@ -18,22 +19,24 @@ public class EstadoRepositoryImpl implements EstadoRepository {
 
     @Override
     public List<Estado> listar() {
-       return entityManager.createQuery("from Estado", Estado.class).getResultList();
+        return entityManager.createQuery("from Estado", Estado.class).getResultList();
     }
 
     @Override
     public Estado buscar(Long id) {
-         return entityManager.find(Estado.class, id);
+        return entityManager.find(Estado.class, id);
     }
 
+    @Transactional
     @Override
     public Estado salvar(Estado estado) {
         return entityManager.merge(estado);
     }
 
+    @Transactional
     @Override
-    public void remover(Estado estado) {
-        estado = buscar(estado.getId());
+    public void remover(Long id) {
+        Estado estado = buscar(id);
         entityManager.remove(estado);
     }
 
