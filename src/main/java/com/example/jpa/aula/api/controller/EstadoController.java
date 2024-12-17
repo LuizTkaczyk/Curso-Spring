@@ -1,6 +1,7 @@
 package com.example.jpa.aula.api.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,15 +35,15 @@ public class EstadoController {
 
     @GetMapping
     public List<Estado> listar() {
-        return estadoRepository.listar();
+        return estadoRepository.findAll();
     }
 
     @GetMapping("/{estadoId}")
     public ResponseEntity<?> buscar(@PathVariable Long estadoId) {
-        Estado estado = estadoRepository.buscar(estadoId);
+        Optional<Estado> estado = estadoRepository.findById(estadoId);
 
-        if (estado != null) {
-            return ResponseEntity.ok(estado);
+        if (estado.isPresent()) {
+            return ResponseEntity.ok(estado.get());
         }
 
         return ResponseEntity.notFound().build();
@@ -57,15 +58,15 @@ public class EstadoController {
 
     @PutMapping("/{estadoId}")
     public ResponseEntity<?> atualizar(@PathVariable Long estadoId, @RequestBody Estado estado) {
-        Estado estadoSalvo = estadoRepository.buscar(estadoId);
+        Optional<Estado> estadoSalvo = estadoRepository.findById(estadoId);
 
-        if (estadoSalvo == null) {
+        if (estadoSalvo.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        BeanUtils.copyProperties(estado, estadoSalvo, "id");
+        BeanUtils.copyProperties(estado, estadoSalvo.get(), "id");
 
-        cadastroEstadoService.salvar(estadoSalvo);
+        cadastroEstadoService.salvar(estadoSalvo.get());
 
         return ResponseEntity.ok(estadoSalvo);
 

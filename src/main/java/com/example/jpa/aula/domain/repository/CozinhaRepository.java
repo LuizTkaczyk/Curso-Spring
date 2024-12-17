@@ -7,13 +7,7 @@ import org.springframework.stereotype.Repository;
 import com.example.jpa.aula.domain.model.Cozinha;
 
 @Repository
-public interface CozinhaRepository {
+public interface CozinhaRepository extends CustomJpaRepository<Cozinha, Long>{
 
-    List<Cozinha> listar();
-
-    Cozinha buscar(Long id);
-
-    Cozinha salvar(Cozinha cozinha);
-
-    void remover(Long id);
+    List<Cozinha> findTodasByNomeContaining(String nome);
 }
